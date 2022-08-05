@@ -1,25 +1,25 @@
-const express = require("express")
-const router = express.Router()
-const userController = require("../controllers/userController")
-// const productController = require("../controllers/productController")
+const express = require("express");
+const router = express.Router();
+const userController = require("../controllers/userController");
+const profileController = require("../controllers/profileController");
+const { authenticated,authorization } = require("../middlewares/auth");
 
-const mw = require("../middlewares/auth")
+router.post("/register", userController.createUser);
+router.post("/login", userController.loginUser);
 
+router.post("/user/:userId", authenticated, profileController.profileFile);
+router.put(
+  "/user/:userId",
+  authenticated,
+  authorization,
+  profileController.updateprofilDetails
+);
 
-
-//router.post("/register",userController.createUser)
-router.post("/register",userController.createUser)
-router.post("/login",userController.loginUser)
-router.get("/user/:userId", mw.authenticated,userController.getuserdata)
-router.put("/user/:userId", mw.authenticated,userController.updateuser)
-
-
-// router.post("/product", productController.createProduct)
-// router.get("/product", productController.getproduct)
-// router.get("/product/:productId", productController.getproductid)
- 
-
-
-
+router.all("/**", function (req, res) {
+  res.status(404).send({
+    status: false,
+    msg: "The api you request is not available",
+  });
+});
 
 module.exports = router;
